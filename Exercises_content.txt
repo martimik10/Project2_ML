@@ -1,0 +1,111 @@
+
+02450 2022 DTU -> VIR CTU Exercises conetents:
+ex0.4.3
+ex0.4.4
+ex0.4.5
+ex0.5.1 basic plot and label
+ex0.5.2 plot from two sensors, labeled, grid
+
+ex1.5.1 import data set
+ex1.5.2 
+ex1.5.3
+ex1.5.4
+ex1.5.5 Handling NaN and outliers
+
+ex2.1.1 
+ex2.1.2 Scatter plot of all attributes
+ex2.1.3 PCA Variance, how many components needed
+ex2.1.4 PCA scatter plot
+ex2.1.5 PCA component coeffitients
+ex2.1.6 PCA a lot of graphs
+ex2.2.1 
+ex2.2.2 PCA on MNIST
+ex2.3.1 PCA components needed for error rate
+ 
+ex3.1.2 Read from txt file and finding back of words automatically
+ex3.1.3 Discarding „stop words“ like „a“, „is“ carrying no information
+ex3.1.4 stemming: using derived words like "computable, computing, computed" as "comput"
+ex3.1.5 Using query (some other sentence containing some of attr. Names) and measuring similarity with already seen sentences by cos similarity
+ex3.2.1 Computing mean, SMC, Jaccard, Cosine similarity
+ex3.3.1 Using SMC, Jaccard, ExtendedJAccard, Cosine and Correlation similarities on faces
+ex3.3.2 Scaling and translating SMC, Cos... -> cos scaling is unvariant, but not for translation
+ 
+ex4.1.1 Generating and plotting Gaussian distribution
+ex4.1.2 using generated points to compute mean & standard deviation
+ex4.1.3 Plotting random Gauss distribution with true Gauss distribution
+ex4.1.4 Multivariable - generating samples with Gauss 2D distribution
+ex4.1.5 Plotting scatter and 2D histogram of random samples of Gauss distribution
+ex4.1.6 Estimating mean and std deviation on MNIST
+ex4.1.7 Instead of using 1D 256 computed values of numbers, we can used 1x256D case
+ex4.2.1 SUMMARY FOR PROJECT 1: Loading data
+ex4.2.2     histograms 
+ex4.2.3     box plot 
+ex4.2.4     box plot for each attribute
+ex4.2.5     scatter plots of each combination of two attributes
+ex4.2.6     3D scatter plot of three attributes
+ex4.2.7     plot the data matrix as an image
+ex4.3.1     visualising Wine dataset from matlab
+ex4.3.2     scatter plots of attributes: are there any suitable for classification?
+ 
+ex5.1.1 importing data set for decision tree
+ex5.1.2 creating and visualizing decision tree
+ex5.1.3 decision tree, instead of computing inpurity by Gini, we use sth else
+ex5.1.4 Full prediction classifier decision tree
+ex5.1.5 removing outliers from wine
+ex5.1.6 Using removed outliers and min_samples_split - smaller number means bigger width of tree
+ex5.1.7 
+ex5.2.1 LINEAR regression with noise (e)
+ex5.2.2 lineary regress. estimate w0, w1
+ex5.2.3 polynomial fitting with different K order polynomial and overfitting
+ex5.2.4 predict alcohol in wine dataset
+ex5.2.5 regression with more variables and transforms and residual plots
+    - residuals are useful 22.00 exe walkthrough
+ex5.2.6 LOGISTIC regression with already removed outliers
+ 
+ex6.1.1 CROSS-VALIDAION decision tree prunning evaluation on wine dataset with removed outliers
+    - each time we get a bit different data. What prune to choose? When the error rate doesnt go down anymore
+ex6.1.2 10-fold cross validation - try adjusting X times -fold and see results
+ex6.2.1 cross validation and sequential feature selection
+ex6.3.1 KNN clustering classification - try adjusting K 
+ex6.3.2 cross validation with leave-one-out and number of neighbours automatic estimation
+ 
+ex7.1.1 
+ex7.1.2 
+ex7.1.4 
+ex7.2.1 
+ex7.3.1 
+ex7.4.3 
+ex7.4.4 
+ 
+ex8.1.1 
+ex8.1.2 
+ex8.2.2 
+ex8.2.5 
+ex8.2.6 
+ex8.3.1 
+ex8.3.2 
+ex8.3.3 
+ 
+ex9.1.1 
+ex9.1.2 
+ex9.2.1 
+ex9.2.2 
+ex9.2.3 
+ 
+ex10.1.1 
+ex10.1.3 
+ex10.1.5 
+ex10.2.1 
+ 
+ex11.1.1 
+ex11.1.5 
+ex11.2.1 
+ex11.2.2 
+ex11.2.3 
+ex11.3.1 
+ex11.3.2 
+ex11.4.1 
+ex12.1.3 
+ex12.1.4 
+ex12.1.5 
+ex12.1.6 
