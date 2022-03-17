@@ -62,20 +62,35 @@ ex5.2.5 regression with more variables and transforms and residual plots
     - residuals are useful 22.00 exe walkthrough
 ex5.2.6 LOGISTIC regression with already removed outliers
  
-ex6.1.1 CROSS-VALIDAION decision tree prunning evaluation on wine dataset with removed outliers
+ex6.1.1 CROSS-VALIDAION HOLD-OUT decision tree prunning evaluation on wine dataset with removed outliers
     - each time we get a bit different data. What prune to choose? When the error rate doesnt go down anymore
+    - train goes down = nice fit, but test goes up at some point = overfitting
+    - apart from tree depth we can tune for example impurity method
 ex6.1.2 10-fold cross validation - try adjusting X times -fold and see results
-ex6.2.1 cross validation and sequential feature selection
+ex6.2.1 2-level cross validation and sequential feature selection on LINEAR REGRESSION
+    - we are not only validating but chosing the best method
+    - selecting best features, outer loop choosing the best model
+    - feature selection: chosing only some best attributes forward/backwards (doing forward here)
+    - plots show the outer loop. We stop iteration when error doesnt go down anymore (USE FOR REPORT)
+         - on cubes plot we chose one attribute and add another one in next iteration until error doesnt go down anymore
+    - cubes plot with Crossfold on X axes: inner loop. Will show us which attributes are very important
+    - text output: using all attributes (no selection). Lower value is worse. Test error is more important
 ex6.3.1 KNN clustering classification - try adjusting K 
-ex6.3.2 cross validation with leave-one-out and number of neighbours automatic estimation
- 
-ex7.1.1 
-ex7.1.2 
-ex7.1.4 
-ex7.2.1 
-ex7.3.1 
-ex7.4.3 
-ex7.4.4 
+    - confusion matrix: if everything classified correctly, wil be on diagonal only
+    - third dataset doesnt work well
+    - same scales on axis is very important for good classification
+    - LOW K: low bias, high variance, LARGE K: high bias, low variance. Good for labels with noise.
+ex6.3.2 cross validation with leave-one-out and number of neighbours automatic estimation for K
+    - what method to chose: do we want good error rate or nice visualization? KNN and trees are intuitive for visualising
+    - Trees need more parameters to tune than K in KNN
+    - Regression is nice for propability of classes, we dont get that in KNN or trees
+ex7.1.1 STATISTICS FOR CLASS: Compare 3 models for KNN by cross-validation and compute their accuracy
+ex7.1.2 Estimate Theta point by Jeffrey interval for one model
+ex7.1.4 Compares two models with confidence intervale and compute p-value for hypotesis analysis
+ex7.2.1 STATISTICS FOR REGRESSION:Compute confidence interval, p-value, split into ONE-HOT
+ex7.3.1 STATISTICS that take into account new dataset for testing (as previous dont have to work on new dataset)
+ex7.4.3  preps for NAIVE BAYES
+ex7.4.4  compute NAIVE BAYES and error rate
  
 ex8.1.1 
 ex8.1.2 
