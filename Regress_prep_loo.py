@@ -4,7 +4,7 @@ import numpy as np
 from scipy.io import loadmat
 import pandas as pd 
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure, subplot, plot, legend, show,  xlabel, ylabel, xticks, yticks
+from matplotlib.pyplot import figure, subplot, plot, legend, show,  xlabel, ylabel, xticks, yticks, xscale
 import warnings
 from sklearn import preprocessing #standardisation
 # import statsmodels.api as sm
