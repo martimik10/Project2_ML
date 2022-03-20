@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+y# -*- coding: utf-8 -*-
 """
 Created on Thu Mar 17 19:30:47 2022
 
@@ -49,6 +49,9 @@ plt.xscale("log")
 # cv_alphas.mean(axis=0).plot(marker="+")
 cv_alphas.mean(axis=0).plot(linewidth=3)
 
+best_alphas = [est[-1].alpha_ for est in cv_results["estimator"]]
+# print(best_alphas)
+
 x = np.round(np.mean(best_alphas))
 y = np.round(test_error.mean(), 2)
 plt.text(x-3200, y+6, '({}, {})'.format(x, y))
@@ -58,9 +61,6 @@ plt.ylabel("Generalization error")
 plt.xlabel("λ")
 _ = plt.title("Generalization error obtained by cross-validation")
 legend(['Gen. Error','Lowest error'])
-
-best_alphas = [est[-1].alpha_ for est in cv_results["estimator"]]
-# print(best_alphas)
 
 # plt.savefig('images/regress_Q2_V2_gen_error.pdf',bbox_inches = 'tight')
 print(f"The mean optimal alpha leading to the lowest generalization error is:\n"
