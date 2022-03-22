@@ -33,7 +33,8 @@ def check_std(attribute):
 # First, we load data and then use LEave One Out Encoding (on-hot)
 #######################
 
-filename = "dataset/penguins.csv"
+filename = "dataset/penguins_testing_regression.csv"
+# filename = "dataset/penguins_testing_regression.csv"
 df = pd.read_csv(filename)
 df = df.iloc[: , 1:] #drop "rowid"
 df = df.iloc[: , 0:7] #drop "year"
@@ -79,10 +80,11 @@ print("- y (what we want to estimate is not standardized")
 
 ######### STANDARZDIZE
 # print(X[:, 0])
-# X_std = preprocessing.scale(X[:, 0:3]) #standardize Bill depth, FLipper, Mass
-# X[:, 0:3] = X_std
+X_std = preprocessing.scale(X[:, 0:3]) #standardize Bill depth, FLipper, Mass
+X[:, 0:3] = X_std
 
-X = preprocessing.scale(X) #standardize EVERYTHING
+# X = preprocessing.scale(X) #standardize EVERYTHING
+print(X[0])
 
 # print(X)
 
