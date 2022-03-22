@@ -17,11 +17,10 @@ from sklearn.model_selection import ShuffleSplit
 
 from Regress_prep_loo import *
 #https://inria.github.io/scikit-learn-mooc/python_scripts/linear_models_regularization.html
-
 # alphas = np.logspace(-2, 0, num=20)
 alphas = np.logspace(-2, 2, num=50)
 # print(alphas)
-ridge = make_pipeline(PolynomialFeatures(degree=1, include_bias=True), StandardScaler(),
+ridge = make_pipeline(PolynomialFeatures(degree=2), StandardScaler(),
                       RidgeCV(alphas=alphas, store_cv_values=True))
 
 cv = ShuffleSplit(n_splits=10, random_state=1)
@@ -55,18 +54,46 @@ cv_alphas.mean(axis=0).plot(linewidth=3) #PLOT funkcni
 best_alphas = [est[-1].alpha_ for est in cv_results["estimator"]]
 #TODO: zelenou tecku udelat spravne dolu tzn pouzit spravny alfy tzn k cemu je cv_alphas a k cemu jsou best_alphas
 
-# x = np.round(np.mean(best_alphas))
-# print("y", test_error.mean())
-# y = 5.13
-# plt.text(x-48.5, y, '({}, {})'.format(x, y))
-# plt.plot(x-4, y, marker="o", markersize=10, markeredgecolor="green", markerfacecolor="green")
+x_marker = np.round(np.mean(best_alphas))
+y_marker = 5.13 #nejnizsi error, my ale bereme pak average vsech nejlepsich v ramci vsech fold validaci test_error.mean()
+plt.text(x_marker-48.5, y_marker, '({}, {})'.format(x_marker, y_marker))
+plt.plot(x_marker-4, y_marker, marker="o", markersize=10, markeredgecolor="green", markerfacecolor="green")
 
-# plt.ylabel("Generalization error")
-# plt.xlabel("λ")
-# _ = plt.title("Generalization error obtained by cross-validation")
-# legend(['Gen. Error','Lowest error'])
+plt.ylabel("Generalization error")
+plt.xlabel("λ")
+_ = plt.title("Generalization error obtained by cross-validation")
+legend(['Gen. Error','Lowest error'])
 
-# # plt.savefig('images/regress_Q2_V2_gen_error.pdf',bbox_inches = 'tight')
+# plt.savefig('images/regress_Q2_V2_gen_error.pdf',bbox_inches = 'tight')
 print(f"The mean optimal alpha leading to the lowest generalization error is:\n"
       f"{np.mean(best_alphas):.2f} +/- {np.std(best_alphas):.2f}")
-# print("POZOR POUZIVAME ZDE POLYNOM, IKDYZ VYCHAZI LEPE, CHTEJI V REPORTU JEN CARU\PLANE/HYPERPLANE")
+print("POZO POUZIVAME ZDE POLYNOM, IKDYZ VYCHAZI LEPE, CHTEJI V REPORTU JEN CARU\PLANE/HYPERPLANE")
+
+# print(y)
+model_done = ridge.fit(X, y)
+predict_first_bill_lenght = ridge.predict(X[0].reshape(1, -1))
+print(predict_first_bill_lenght)  
+#should be 39.1, is 40.08. Coz je chyba 2.25% coz sedi (protoze to presne tohodle penguina uz znalo, jinak je avg 5.5%)
+# https://www.analyticsvidhya.com/blog/2016/01/ridge-lasso-regression-python-complete-tutorial/
+plt.show()
+
+# #############################################################################
+coefs = []
+for a in alphas:
+    ridge = Ridge(alpha=a, fit_intercept=False)
+    ridge.fit(X, y)
+    coefs.append(ridge.coef_)
+    
+    
+# Display results
+
+ax = plt.gca()
+
+ax.plot(alphas, coefs)
+ax.set_xscale("log")
+ax.set_xlim(ax.get_xlim()[::-1])  # reverse axis
+plt.xlabel("alpha")
+plt.ylabel("weights")
+plt.title("Ridge coefficients as a function of the regularization")
+plt.axis("tight")
+plt.show()

@@ -55,8 +55,7 @@ best_alphas = [est[-1].alpha_ for est in cv_results["estimator"]]
 #TODO: zelenou tecku udelat spravne dolu tzn pouzit spravny alfy tzn k cemu je cv_alphas a k cemu jsou best_alphas
 
 x_marker = np.round(np.mean(best_alphas))
-print("y", test_error.mean())
-y_marker = 5.13
+y_marker = 5.13 #nejnizsi error, my ale bereme pak average vsech nejlepsich v ramci vsech fold validaci test_error.mean()
 plt.text(x_marker-48.5, y_marker, '({}, {})'.format(x_marker, y_marker))
 plt.plot(x_marker-4, y_marker, marker="o", markersize=10, markeredgecolor="green", markerfacecolor="green")
 
@@ -73,4 +72,6 @@ print("POZO POUZIVAME ZDE POLYNOM, IKDYZ VYCHAZI LEPE, CHTEJI V REPORTU JEN CARU
 # print(y)
 model_done = ridge.fit(X, y)
 predict_first_bill_lenght = ridge.predict(X[0].reshape(1, -1))
-print(predict_first_bill_lenght)  #should be 39.1, is 40.08. Coz je chyba 2.25% coz sedi (protoze to presne tohodle penguina uz znalo, jinak je avg 5.5%)
+print(predict_first_bill_lenght)  
+#should be 39.1, is 40.08. Coz je chyba 2.25% coz sedi (protoze to presne tohodle penguina uz znalo, jinak je avg 5.5%)
+# https://www.analyticsvidhya.com/blog/2016/01/ridge-lasso-regression-python-complete-tutorial/
