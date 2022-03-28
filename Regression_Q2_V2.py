@@ -18,7 +18,7 @@ from sklearn.model_selection import ShuffleSplit
 from Regress_prep_loo import *
 #https://inria.github.io/scikit-learn-mooc/python_scripts/linear_models_regularization.html
 # alphas = np.logspace(-2, 0, num=20)
-alphas = np.logspace(-2, 2.5, num=50)
+alphas = np.logspace(-3, 2.5, num=150)
 # print(alphas)
 ridge = make_pipeline(PolynomialFeatures(degree=2), StandardScaler(),
                       RidgeCV(alphas=alphas, store_cv_values=True))
@@ -28,9 +28,6 @@ cv_results = cross_validate(ridge, X, y,
                             cv=cv, scoring="neg_mean_squared_error",
                             return_train_score=True,
                             return_estimator=True, n_jobs=2)
-train_error = -cv_results["train_score"]
-print(f"Mean squared error of linear regression model on the train set:\n"
-      f"{train_error.mean():.3f} +/- {train_error.std():.3f}")
 
 test_error = -cv_results["test_score"]
 print(f"Mean squared error of linear regression model on the test set:\n"
@@ -45,7 +42,7 @@ print(f"Mean squared error of linear regression model on the test set:\n"
 mse_alphas = [est[-1].cv_values_.mean(axis=0)
               for est in cv_results["estimator"]]
 cv_alphas = pd.DataFrame(mse_alphas, columns=alphas)
-# print("cv_alfas",cv_alphas)
+
 
 plt.xscale("log")
 # cv_alphas.mean(axis=0).plot(marker="+")
@@ -53,15 +50,15 @@ cv_alphas.mean(axis=0).plot(linewidth=3) #PLOT funkcni
 
 best_alphas = [est[-1].alpha_ for est in cv_results["estimator"]]
 #TODO: zelenou tecku udelat spravne dolu tzn pouzit spravny alfy tzn k cemu je cv_alphas a k cemu jsou best_alphas
-
+print("best alphas", best_alphas)
 x_marker = np.round(np.mean(best_alphas))
 y_marker = 5.045 #nejnizsi error, my ale bereme pak average vsech nejlepsich v ramci vsech fold validaci test_error.mean()
-plt.text(x_marker-92, y_marker-0.005, '({}, {})'.format(x_marker, y_marker))
+plt.text(x_marker-97, y_marker-0.005, '({}, {})'.format(x_marker, y_marker))
 plt.plot(x_marker, y_marker, marker="o", markersize=10, markeredgecolor="green", markerfacecolor="green")
 
 plt.ylabel("Generalization error")
 plt.xlabel("λ")
-_ = plt.title("Generalization error obtained by cross-validation")
+_ = plt.title("Generalization error obtained by two-layer cross-validation")
 legend(['Gen. Error','Lowest error'])
 
 # plt.savefig('images/regress_Q2_V2_gen_error.pdf',bbox_inches = 'tight')
@@ -72,13 +69,11 @@ print("POZO POUZIVAME ZDE POLYNOM, IKDYZ VYCHAZI LEPE, CHTEJI V REPORTU JEN CARU
 model_done = ridge.fit(X, y)
 
 #################### TESTING ON NEVER SEEN DATA
-
 def predict_unseen(unseen_file, element=0):
     """USAGE: Completely remove few instances from dataset, retrain model and then
        use the removed values, standardize them and
        use the predict() function to see the output, compare it to true value
        be sure to include atleast instance from one of each attribute for nice data proccessing"""
-       
     filename = unseen_file
     df_unseen = pd.read_csv(filename)
     df_unseen = df_unseen.iloc[: , 1:] #drop "rowid"
@@ -99,13 +94,10 @@ def predict_unseen(unseen_file, element=0):
     X_unseen = raw_data_unseen[:, 1:]
 
     y_unseen_label = raw_data_unseen[:, 0]
-
-    X_info_unseen = df_unseen.iloc[:, 1:] #dtio Bill len as it is the output (only for showing)
+    X_info_unseen = df_unseen.iloc[:, 1:]
     # X_info_unseen.info()
-    
-    X_std_unseen = preprocessing.scale(X_unseen[:, 0:3]) #standardize Bill depth, FLipper, Mass
-    X_unseen[:, 0:3] = X_std_unseen
-    
+    X_std_unseen = preprocessing.scale(X_unseen[:, 0:3]) 
+    X_unseen[:, 0:3] = X_std_unseen #standardize Bill depth, FLipper, Mass
     
     predict_unseen = ridge.predict(X_unseen)
     
@@ -118,8 +110,9 @@ def predict_unseen(unseen_file, element=0):
     print("Mean true error %", round(np.mean(perc_error), 2))
     
     
-    
-unseen_file = "dataset/penguins_testing_regression_unseen.csv"
-predict_unseen(unseen_file) 
+# unseen_file = "dataset/penguins_testing_regression_unseen.csv"
+# predict_unseen(unseen_file) 
 #should be 39.1, is 40.08. Coz je chyba 2.25% coz sedi (protoze to presne tohodle penguina uz znalo, jinak je avg 5.5%)
 # https://www.analyticsvidhya.com/blog/2016/01/ridge-lasso-regression-python-complete-tutorial/
+#################
+

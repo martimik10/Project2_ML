@@ -92,8 +92,8 @@ ex7.3.1 STATISTICS that take into account new dataset for testing (as previous d
 ex7.4.3  preps for NAIVE BAYES
 ex7.4.4  compute NAIVE BAYES and error rate
  
-ex8.1.1 
-ex8.1.2 
+ex8.1.1 Regularization, standardization, cross-validation of dataset for linear regression
+ex8.1.2 The same for logistic regression
 ex8.2.2 
 ex8.2.5 
 ex8.2.6 
