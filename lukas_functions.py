@@ -38,19 +38,7 @@ def load_data(path, disp):
 
     # REMOVE NAN VALUES
     data = data.dropna(axis=0, how="any")
-
-    # PLOT THE VALUES
-    plt.subplots(2, 2, figsize=(10, 7))
-    plt.suptitle('Distribution')
-    plt.subplot(2, 2, 1)
-    sns.distplot(data['bill_length_mm'])
-    plt.subplot(2, 2, 2)
-    sns.distplot(data['bill_depth_mm'])
-    plt.subplot(2, 2, 3)
-    sns.distplot(data['flipper_length_mm'])
-    plt.subplot(2, 2, 4)
-    sns.distplot(data['body_mass_g'])
-    plt.savefig('images/lukas/Distribution.pdf')
+    data = data.reset_index(drop=True)
 
     # REMOVE OUTLIERS FROM BOUNDARY VALUES (SPOILER: THERE ARE NONE)
     data[(data['bill_length_mm'] > 60.37587582718376) |
@@ -67,15 +55,6 @@ def load_data(path, disp):
         data['island_encoded'] < -1.4938943234736295)]
     data[(data['sex_encoded'] > 3.020135129128595) | (
         data['sex_encoded'] < -0.020135129128595164)]
-
-    # FEATURE CORRELATION HEATMAP
-    plt.figure(figsize=(15, 9))
-    plt.title('Correlation matrix of data')
-    features = ['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm',
-                'body_mass_g', 'species_encoded', 'island_encoded', 'sex_encoded']
-    cor = data[features].corr()
-    hm1 = sns.heatmap(cor, annot=True, cmap='YlGnBu')
-    plt.savefig('images/lukas/Correlation.pdf')
 
     # NO PRINTING
     if disp==False:
@@ -97,6 +76,8 @@ def load_data(path, disp):
     print(old_data.isnull().any())
 
     # OUTLIERS
+    features = ['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm',
+                'body_mass_g', 'species_encoded', 'island_encoded', 'sex_encoded']
     print('\n\n\nREMOVE OUTLIERS\n')
     for column in data[features]:
         print("Highest allowed in {} is:{}".format(

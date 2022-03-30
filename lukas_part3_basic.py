@@ -75,13 +75,6 @@ model4 = LogisticRegression()
 model4 = model4.fit(x_train, y_train)
 y_prediction4 = model4.predict(x_test)  # predict response
 
-# REPORT
-# print_report(y_test, y_prediction1, y_prediction2,
-#              y_prediction3, y_prediction4)
-# print_classification_report(y_test, y_prediction1,y_prediction2, y_prediction3, y_prediction4)
-plot_confusion_matrix(y_test, y_prediction1, y_prediction2,
-                      y_prediction3, y_prediction4)
-
 # ACCURACY
 print("\n\nACCURACY")
 print("KNN: ", accuracy_score(y_test, y_prediction1))
@@ -89,7 +82,14 @@ print("Decission Tree: ",
       accuracy_score(y_test, y_prediction2))
 print("SVM: ", accuracy_score(y_test, y_prediction3))
 print("Logistic Regression: ",
-      accuracy_score(y_test, y_prediction4),"\n\n")
+      accuracy_score(y_test, y_prediction4), "\n\n")
+
+# REPORT
+# print_report(y_test, y_prediction1, y_prediction2,
+#              y_prediction3, y_prediction4)
+# print_classification_report(y_test, y_prediction1,y_prediction2, y_prediction3, y_prediction4)
+plot_confusion_matrix(y_test, y_prediction1, y_prediction2,
+                      y_prediction3, y_prediction4)
 
 # ROC CURVE KNN
 plot_roc_curve(model1, model2, model3, model4, x_train, x_test, y_train, y_test)
