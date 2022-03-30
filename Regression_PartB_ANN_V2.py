@@ -12,7 +12,7 @@ from Regress_prep_ann import *
 # Parameters for neural network classifier
 n_hidden_units = 2      # number of hidden units
 n_replicates = 1        # number of networks trained in each k-fold
-max_iter = 100000
+max_iter = 100
 print("MMMMMMMMMM", M)
 
 # K-fold crossvalidation
