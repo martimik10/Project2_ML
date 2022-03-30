@@ -139,32 +139,48 @@ ax.set_xlabel('Predicted values')
 ax.set_ylabel('Actual values')
 plt.show()
 
-# ROC CURVE AND SCORE
-
-fpr1, tpr1, thresh1 = roc_curve(y_test, y_prediction1, pos_label=1)
-fpr2, tpr2, thresh2 = roc_curve(y_test, y_prediction2, pos_label=1)
-fpr3, tpr3, thresh3 = roc_curve(y_test, y_prediction3, pos_label=1)
-
-# ROC CURVE FOR TPR = FPR
-train_pred_prob1 = model1.predict_proba(x_train)
-#y_pred_prob1 = y_pred_prob1[:, 1]
-#roc_auc_score(y_test, y_pred_prob1, multi_class='ovo', average='weighted')
-#roc_auc_score(y_test, y_pred_prob2, multi_class='ovo', average='weighted')
-#roc_auc_score(y_test, y_pred_prob3, multi_class='ovo', average='weighted')
-fpr1, tpr1, thresh1 = roc_curve(y_train, train_pred_prob1[:,1], pos_label=1)
-#fpr2, tpr2, thresh2 = roc_curve(y_test, y_pred_prob2[:,1], pos_label=1)
-#fpr3, tpr3, thresh3 = roc_curve(y_test, y_pred_prob3[:,1], pos_label=1)
-random_probs = [0 for i in range(len(y_test))]
-p_fpr, p_tpr, _ = roc_curve(y_test, random_probs, pos_label=1)
-plt.plot(fpr1, tpr1, linestyle='--', color='black', label='KNN')
-plt.plot(fpr2, tpr2, linestyle='--', color='green', label='Descision Tree')
-plt.plot(fpr3, tpr3, linestyle='--', color='red', label='SVM')
-plt.plot(p_fpr, p_tpr, linestyle='--', color='blue')
-plt.title('ROC curve')
+# ROC CURVE KNN
+plt.subplot(1, 4, 1)
+train_probs1 = model1.predict_proba(x_train)
+train_probs1 = train_probs1[:, 1]
+fpr1_train, tpr1_train, _ = roc_curve(y_train, train_probs1, pos_label=1)
+test_probs1 = model1.predict_proba(x_test)
+test_probs1 = test_probs1[:, 1]
+fpr1_test, tpr1_test, _ = roc_curve(y_test, test_probs1, pos_label=1)
+plt.plot(fpr1_train, tpr1_train, marker='.', label='train')
+plt.plot(fpr1_test, tpr1_test, marker='.', label='validation')
+plt.title('KNN')
 plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive rate')
-plt.legend(loc='best')
-#plt.savefig('ROC', dpi=300)
+plt.ylabel('True Positive Rate')
+plt.legend()
+
+# ROC CURVE DECISION TREE
+plt.subplot(1, 4, 2)
+train_probs2 = model2.predict_proba(x_train)
+train_probs2 = train_probs2[:, 1]
+fpr2_train, tpr2_train, _ = roc_curve(y_train, train_probs2, pos_label=1)
+test_probs2 = model2.predict_proba(x_test)
+test_probs2 = test_probs2[:, 1]
+fpr2_test, tpr2_test, _ = roc_curve(y_test, test_probs2, pos_label=1)
+plt.plot(fpr2_train, tpr2_train, marker='.', label='train')
+plt.plot(fpr2_test, tpr2_test, marker='.', label='validation')
+plt.title('Decision Tree')
+plt.xlabel('False Positive Rate')
+plt.legend()
+
+# ROC CURVE MODEL SVM
+plt.subplot(1, 4, 3)
+train_probs3 = model3.predict_proba(x_train)
+train_probs3 = train_probs3[:, 1]
+fpr3_train, tpr3_train, _ = roc_curve(y_train, train_probs3, pos_label=1)
+test_probs3 = model3.predict_proba(x_test)
+test_probs3 = test_probs3[:, 1]
+fpr3_test, tpr3_test, _ = roc_curve(y_test, test_probs3, pos_label=1)
+plt.plot(fpr3_train, tpr3_train, marker='.', label='train')
+plt.plot(fpr3_test, tpr3_test, marker='.', label='validation')
+plt.title('SVM')
+plt.xlabel('False Positive Rate')
+plt.legend()
 plt.show()
 
 # CLASSIFICATION REPORT
@@ -174,33 +190,4 @@ print("Decision tree")
 print(classification_report(y_test, y_prediction2))
 print("SVM")
 print(classification_report(y_test, y_prediction3))
-
-#######################################################
-
-# LOGISTIC REGRESSION
-model = LogisticRegression().fit(x_train, y_train)
-pred = model.predict(x_test)
-
-# EVAL
-print('CONFUSION MATRIX')
-print(confusion_matrix(y_test, pred))
-print('CLASSIFICATION REPORT\n')
-print(classification_report(y_test, pred))
-
-# ROC CURVE
-print('ROC CURVE')
-train_probs = model.predict_proba(x_train)
-train_probs1 = train_probs[:, 1]
-fpr0, tpr0, thresholds0 = roc_curve(y_train, train_probs1, pos_label=1)
-
-test_probs = model.predict_proba(x_test)
-test_probs1 = test_probs[:, 1]
-fpr1, tpr1, thresholds1 = roc_curve(y_test, test_probs1, pos_label=1)
-
-plt.plot(fpr0, tpr0, marker='.', label='train')
-plt.plot(fpr1, tpr1, marker='.', label='validation')
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.legend()
-plt.show()
 
