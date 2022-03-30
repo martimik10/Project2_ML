@@ -26,6 +26,7 @@ from scipy import stats
 
 from Regress_prep_loo import *
 
+torch.cuda.is_available(﻿)
 # # def neural_network(X, y, hidden_layers, kfold):
 # #     """create neural network and cross validate on kfold to find best number of hidden layers"""
 # #     model = Sequential()
