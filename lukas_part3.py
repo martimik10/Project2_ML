@@ -44,17 +44,7 @@ data = data.dropna(axis=0, how="any")
 print(data.head(5))
 
 # PLOT THE VALUES
-plt.subplots(2, 2, figsize=(10, 7))
-plt.suptitle('Distribution')
-plt.subplot(2, 2, 1)
-sns.distplot(data['bill_length_mm'])
-plt.subplot(2, 2, 2)
-sns.distplot(data['bill_depth_mm'])
-plt.subplot(2, 2, 3)
-sns.distplot(data['flipper_length_mm'])
-plt.subplot(2, 2, 4)
-sns.distplot(data['body_mass_g'])
-plt.savefig('images/lukas/Distribution.pdf')
+
 
 # REMOVE OUTLIERS FROM BOUNDARY VALUES (SPOILER: THERE ARE NONE)
 print('\n\n\nREMOVE OUTLIERS\n')
@@ -87,12 +77,7 @@ print(old_data.describe(), end='\n\n')
 print("Transformed Data")
 print(data.describe())
 
-# FEATURE CORRELATION HEATMAP
-plt.figure(figsize=(15, 9))
-plt.title('Correlation matrix of data')
-cor = data[features].corr()
-hm1 = sns.heatmap(cor, annot=True, cmap='YlGnBu')
-plt.savefig('images/lukas/Correlation.pdf')
+
 
 # TEST AND TRAIN SET
 print('\n\n\nTEST AND TRAIN SET\n')
@@ -119,11 +104,9 @@ x_test = scaled_x_test
 print('\n\n\nCROSS VALIDATION')
 
 knn = KNeighborsClassifier(n_neighbors=4)
-CV_inner = model_selection.KFold(10, shuffle=False)
-for i in range (1,10):
-    CV = model_selection.KFold(i, shuffle=False)
-    scores_train = cross_val_score(knn, x_train, y_train, cv=CV_inner)
-    scores_test = cross_val_score(knn, x_test, y_test, cv=CV)
+CV_inner = model_selection.KFold(10, shuffle=True)
+scores_train = cross_val_score(knn, x_train, y_train, cv=CV_inner)
+scores_test = cross_val_score(knn, x_test, y_test, cv=CV)
 
 RMSE_train = sqrt(mean(absolute(scores_train))) #root mean square
 RMSE_test = sqrt(mean(absolute(scores_test))) #root mean square
