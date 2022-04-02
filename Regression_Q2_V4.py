@@ -26,13 +26,13 @@ from Regress_prep_loo import *
 
 ## Crossvalidation
 # Create crossvalidation partition for evaluation
-K = 5
+K = 10
 CV = model_selection.KFold(K, shuffle=True)
 #CV = model_selection.KFold(K, shuffle=False)
 
 # Values of lambda
 # lambdas = np.power(10.,range(-1,9))
-lambdas = np.logspace(-2,9, num=1500)
+lambdas = np.logspace(-2,6, num=150)
 # Initialize variables
 #T = len(lambdas)
 Error_train = np.empty((K,1))

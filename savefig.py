@@ -4,13 +4,9 @@ Created on Tue Mar 29 18:43:13 2022
 
 @author: Marti
 """
-from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, 
-                           title, subplot, show, grid)
 import numpy as np
-from scipy.io import loadmat
-import sklearn.linear_model as lm
-from sklearn import model_selection
-from toolbox_02450 import rlr_validate
 
-
-plt.savefig('images/regress_Q2_V4.pdf',bbox_inches = 'tight')
+pole =[22.098404, 14.079178, 7.314429, 4.8881974, 4.812559, 4.803937, 4.787801, 4.836721, 4.7837358, 4.846053]
+print(np.min(pole))
+print(np.argmin(pole))
+print(len(pole))

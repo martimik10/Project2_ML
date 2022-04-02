@@ -33,7 +33,7 @@ def check_std(attribute):
 # First, we load data and then use LEave One Out Encoding (on-hot)
 #######################
 
-filename = "dataset/penguins.csv"
+filename = "dataset/penguins_testing_regression.csv"
 # filename = "dataset/penguins_testing_regression.csv"
 df = pd.read_csv(filename)
 df = df.iloc[: , 1:] #drop "rowid"

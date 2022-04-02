@@ -108,11 +108,16 @@ def predict_unseen(unseen_file, element=0):
     print("Abs True error",abs_true_error )
     print("Error in %:", perc_error)
     print("Mean true error %", round(np.mean(perc_error), 2))
+    return predict_unseen, y_unseen_label
     
     
-# unseen_file = "dataset/penguins_testing_regression_unseen.csv"
-# predict_unseen(unseen_file) 
 #should be 39.1, is 40.08. Coz je chyba 2.25% coz sedi (protoze to presne tohodle penguina uz znalo, jinak je avg 5.5%)
-# https://www.analyticsvidhya.com/blog/2016/01/ridge-lasso-regression-python-complete-tutorial/
-#################
+
+################# STATISTICAL ANALYSIS ON UNSEEN DATA
+
+unseen_file = "dataset/penguins_testing_regression_unseen.csv"
+yhat1, y_true = predict_unseen(unseen_file) 
+
+
+
 

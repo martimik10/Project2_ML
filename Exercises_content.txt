@@ -94,14 +94,15 @@ ex7.4.4  compute NAIVE BAYES and error rate
  
 ex8.1.1 Two layer CV: Regularization, standardization, cross-validation of dataset for linear regression
 ex8.1.2 The same for logistic regression
+    - Hold-out method CV
 ex8.2.2 ANN with 1 input layer, 1 hidden, 1 output
     - if activation function is linear, it would at best be linear regression, else (ReLU/tanh) its more of a logistic regression
         but with growing number of neurons it can be a lot more flexible.
     - ANN dont have to output the optimal output, so we train them several times
     - ANN can be used for both classification and regression
     - there is BCELoss loss function, that is only good for binary data!
-ex8.2.5 
-ex8.2.6 
+ex8.2.5 ANN with one unit
+ex8.2.6 ANN for Regression
 ex8.3.1 
 ex8.3.2 
 ex8.3.3 
