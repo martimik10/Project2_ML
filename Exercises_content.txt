@@ -107,10 +107,11 @@ ex8.3.1
 ex8.3.2 
 ex8.3.3 
  
-ex9.1.1 
-ex9.1.2 
-ex9.2.1 
-ex9.2.2 
+ex9.1.1 bagging & ensemble, not helpful much for linear classifiers
+ex9.1.2 Boosting - applying loss function. Complicated decision boundary, almost perfect with L=500
+    - then bagging on nonlinear classification
+ex9.2.1 logistic regression, ROC and confusion matrix
+ex9.2.2 ilustration of ROC with bad classifier
 ex9.2.3 
  
 ex10.1.1 
