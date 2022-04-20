@@ -5,7 +5,7 @@ import numpy as np
 from numpy import mean
 from numpy import absolute
 from numpy import sqrt
-from sklearn.preprocessing import LabelEncoder, Normalizer, StandardScaler, label_binarize
+from sklearn.preprocessing import LabelEncoder, Normalizer, StandardScaler, label_binarize, OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, accuracy_score, roc_curve, roc_auc_score
 import sklearn.metrics
@@ -30,36 +30,47 @@ def load_data(path, disp):
     data = pd.read_csv(path)
     old_data = data.copy()
 
+    # REMOVE NAN VALUES
+    data = data.dropna(axis=0, how="any")
+    data = data.reset_index(drop=True)
+
     # ENCODE THE STRING VALUES TO NUMBERS
     le = LabelEncoder()
     data['species_encoded'] = le.fit_transform(data['species'])
     data['island_encoded'] = le.fit_transform(data['island'])
     data['sex_encoded'] = le.fit_transform(data['sex'])
 
-    # REMOVE NAN VALUES
-    data = data.dropna(axis=0, how="any")
-    data = data.reset_index(drop=True)
-
     # REMOVE OUTLIERS FROM BOUNDARY VALUES (SPOILER: THERE ARE NONE)
+    # based on boxplot: https://towardsdev.com/applying-classification-algorithms-on-palmer-penguin-dataset-a41f6312b7f0
     data[(data['bill_length_mm'] > 60.37587582718376) |
-        (data['bill_length_mm'] < 27.61274692730728)]
+         (data['bill_length_mm'] < 27.61274692730728)]
     data[(data['bill_depth_mm'] > 23.064207418059354) |
-        (data['bill_depth_mm'] < 11.25675066577299)]
+         (data['bill_depth_mm'] < 11.25675066577299)]
     data[(data['flipper_length_mm'] > 243.0814956070838) |
-        (data['flipper_length_mm'] < 158.94844451267664)]
+         (data['flipper_length_mm'] < 158.94844451267664)]
     data[(data['body_mass_g'] > 6623.565273989314) |
-        (data['body_mass_g'] < 1794.548498465776)]
+         (data['body_mass_g'] < 1794.548498465776)]
     data[(data['species_encoded'] > 3.5932018846280505) |
-        (data['species_encoded'] < -1.7488905073825416)]
+         (data['species_encoded'] < -1.7488905073825416)]
     data[(data['island_encoded'] > 2.79329552107842) | (
         data['island_encoded'] < -1.4938943234736295)]
     data[(data['sex_encoded'] > 3.020135129128595) | (
         data['sex_encoded'] < -0.020135129128595164)]
 
+    # ONE HOT ENCODING
+    encoder = OneHotEncoder(handle_unknown='ignore')
+    features = ['island_encoded', 'species_encoded']
+    encoder_data = pd.DataFrame(
+        encoder.fit_transform(data[features]).toarray())
+    data = data.join(encoder_data)
+    data.columns.values[-6:] = ['gentoo',  'chinstrap', 'adelie',
+                                'torgersen', 'dream', 'biscoe']
+    #final_df.drop('sex_encoded', axis=1, inplace=True) deletes the unwanted columns
+
     # NO PRINTING
-    if disp==False:
+    if disp == False:
         return data
-    
+
     # DATA STATS
     print('\n\n\nDATA STATS\n')
     print('Old Data')
@@ -84,10 +95,11 @@ def load_data(path, disp):
             column, data[column].mean() + 3*data[column].std()))
         print("Lowest allowed in {} is:{}".format(
             column, data[column].mean() - 3*data[column].std()))
-    
+
     # RETURN VALUES
     print("\n\n")
     return data
+
 
 def plot_correlation(data):
     features = ['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm',
@@ -97,6 +109,7 @@ def plot_correlation(data):
     cor = data[features].corr()
     hm1 = sns.heatmap(cor, annot=True, cmap='YlGnBu')
     plt.savefig('images/lukas/simple/Correlation.pdf')
+
 
 def plot_distribution(data):
     plt.subplots(2, 2, figsize=(10, 7))
@@ -111,16 +124,79 @@ def plot_distribution(data):
     sns.distplot(data['body_mass_g'])
     plt.savefig('images/lukas/simple/Distribution.pdf')
 
-def plot_error_knn(error_rate):
+
+def find_best_k(x_train, y_train, x_test, y_test):
+    k_range = range(1, 10)
+    error_rate = []
+    for i in k_range: # optimazed for this dataset
+        knn = KNeighborsClassifier(n_neighbors=i)
+        knn.fit(x_train, y_train)
+        pred_i = knn.predict(x_test)
+        error_rate.append(np.mean(pred_i != y_test))
+    plot_error_knn(error_rate,k_range)
+    min_error = min(error_rate)
+    best_k = np.argmin(error_rate)+k_range[0]-1
+    print("Best K: ",best_k+1)
+    return best_k
+
+# CROSS VALIDATION INNTER LAYER
+# finds the best model which we then train and test on a new dataset in outer loop
+
+def cross_validation_inner(data_x, data_y, knn, best_k, decisiontree, svmmodel, logisticregression):
+    kf = KFold(n_splits=10, shuffle=False)
+    gen_error1, gen_error2, gen_error3, gen_error4, gen_error5 = 0, 0, 0, 0, 0
+    data_y = data_y.reset_index(drop=True)
+
+    for train_index, test_index in kf.split(data_x):
+        x_train, x_test = data_x[train_index], data_x[test_index]
+        y_test, y_train = data_y[test_index], data_y[train_index]
+
+        # KNN
+        model1 = knn[best_k].fit(x_train, y_train)
+        y_prediction1 = model1.predict(x_test)  # predict response
+        gen_error1 += (len(test_index)/(len(data_x))) * \
+            (1-accuracy_score(y_test, y_prediction1))
+
+        # DECISION TREE
+        model2 = decisiontree.fit(x_train, y_train)
+        y_prediction2 = model2.predict(x_test)  # predict response
+        gen_error2 += (len(test_index)/(len(train_index))) * \
+            (1-accuracy_score(y_test, y_prediction2))
+
+        # SVM
+        model3 = svmmodel.fit(x_train, y_train)
+        y_prediction3 = model3.predict(x_test)  # predict response
+        gen_error3 += (len(test_index)/(len(train_index))) * \
+            (1-accuracy_score(y_test, y_prediction3))
+
+        # LOGISTIC REGRESSION
+        model4 = logisticregression.fit(x_train, y_train)
+        y_prediction4 = model4.predict(x_test)  # predict response
+        gen_error4 += (len(test_index)/(len(train_index))) * \
+            (1-accuracy_score(y_test, y_prediction4))
+
+        # BASELINE
+        # 168x male, 165xfemale
+        y_prediction5 = np.ones(len(x_test), dtype=int)
+        gen_error5 += (len(test_index)/(len(train_index))) * \
+            (1-accuracy_score(y_test, y_prediction5))
+
+    gen_errors = [gen_error1, gen_error2, gen_error3, gen_error4, gen_error5]
+    print(100*np.array(gen_errors).round(4)," [%]")
+    return gen_errors #generalization error (calculated using validation err)
+
+
+def plot_error_knn(error_rate, k_range):
     plt.figure(figsize=(10, 6))
-    plt.plot(range(1, 10), error_rate, color='blue', linestyle='dashed', marker='o',
-            markerfacecolor='red', markersize=10)
+    plt.plot(k_range, error_rate, color='blue', linestyle='dashed', marker='o',
+             markerfacecolor='red', markersize=10)
     plt.title('Error Rate vs. K Value')
     plt.xlabel('K')
     plt.ylabel('Error Rate')
     plt.savefig('images/lukas/simple/Error Rate KNN.pdf')
 
-def print_size(x_train, y_train, x_test,y_test):
+
+def print_size(x_train, y_train, x_test, y_test):
     print('\n\n\nTEST AND TRAIN SET\n')
     print("Shape of x_train:{}".format(x_train.shape))
     print("Shape of x_test:{}".format(x_test.shape))
@@ -151,11 +227,11 @@ def print_classification_report(y_test, y_prediction1, y_prediction2, y_predicti
     print(classification_report(y_test, y_prediction4))
 
 
-def plot_confusion_matrix(y_test, y_prediction1, y_prediction2, y_prediction3, y_prediction4):
-    ConfusionMatrix1 = confusion_matrix(y_test, y_prediction1)
-    ConfusionMatrix2 = confusion_matrix(y_test, y_prediction2)
-    ConfusionMatrix3 = confusion_matrix(y_test, y_prediction3)
-    ConfusionMatrix4 = confusion_matrix(y_test, y_prediction4)
+def plot_confusion_matrix(y_test1, y_test2, y_test3, y_test4, y_prediction1, y_prediction2, y_prediction3, y_prediction4):
+    ConfusionMatrix1 = confusion_matrix(y_test1, y_prediction1)
+    ConfusionMatrix2 = confusion_matrix(y_test2, y_prediction2)
+    ConfusionMatrix3 = confusion_matrix(y_test3, y_prediction3)
+    ConfusionMatrix4 = confusion_matrix(y_test4, y_prediction4)
 
     # KNN
     plt.subplots(2, 2, figsize=(10, 7))
@@ -186,17 +262,19 @@ def plot_confusion_matrix(y_test, y_prediction1, y_prediction2, y_prediction3, y
     ax.set_ylabel('Actual values')
     plt.savefig('images/lukas/simple/Confusion Matrix.pdf')
 
-def plot_roc_curve(model1, model2, model3, model4, x_train,x_test,y_train,y_test):
+
+def plot_roc_curve(model1, model2, model3, model4, x_train1, x_train2, x_train3, x_train4, x_test1, x_test2, x_test3, x_test4, y_train1, y_train2, y_train3, y_train4, y_test1, y_test2, y_test3, y_test4):
     plt.subplots(2, 2, figsize=(10, 7))
     plt.suptitle('ROC Curve')
     plt.subplot(2, 2, 1)
-    train_probs1 = model1.predict_proba(x_train)
+    train_probs1 = model1.predict_proba(x_train1)
     train_probs1 = train_probs1[:, 1]
-    fpr1_train, tpr1_train, _ = roc_curve(y_train, train_probs1)  # pos_label=1
-    test_probs1 = model1.predict_proba(x_test)
+    fpr1_train, tpr1_train, _ = roc_curve(
+        y_train1, train_probs1)  # pos_label=1
+    test_probs1 = model1.predict_proba(x_test1)
     test_probs1 = test_probs1[:, 1]
     fpr1_test, tpr1_test, _ = roc_curve(
-        y_test, test_probs1)  # pos_label=1
+        y_test1, test_probs1)  # pos_label=1
     plt.plot(fpr1_train, tpr1_train, marker='.', label='train')
     plt.plot(fpr1_test, tpr1_test, marker='.', label='validation')
     plt.title('KNN')
@@ -205,13 +283,14 @@ def plot_roc_curve(model1, model2, model3, model4, x_train,x_test,y_train,y_test
 
     # ROC CURVE DECISION TREE
     plt.subplot(2, 2, 2)
-    train_probs2 = model2.predict_proba(x_train)
+    train_probs2 = model2.predict_proba(x_train2)
     train_probs2 = train_probs2[:, 1]
-    fpr2_train, tpr2_train, _ = roc_curve(y_train, train_probs2)  # pos_label=1
-    test_probs2 = model2.predict_proba(x_test)
+    fpr2_train, tpr2_train, _ = roc_curve(
+        y_train2, train_probs2)  # pos_label=1
+    test_probs2 = model2.predict_proba(x_test2)
     test_probs2 = test_probs2[:, 1]
     fpr2_test, tpr2_test, _ = roc_curve(
-        y_test, test_probs2)  # pos_label=1
+        y_test2, test_probs2)  # pos_label=1
     plt.plot(fpr2_train, tpr2_train, marker='.', label='train')
     plt.plot(fpr2_test, tpr2_test, marker='.', label='validation')
     plt.title('Decision Tree')
@@ -220,13 +299,14 @@ def plot_roc_curve(model1, model2, model3, model4, x_train,x_test,y_train,y_test
 
     # ROC CURVE MODEL SVM
     plt.subplot(2, 2, 3)
-    train_probs3 = model3.predict_proba(x_train)
+    train_probs3 = model3.predict_proba(x_train3)
     train_probs3 = train_probs3[:, 1]
-    fpr3_train, tpr3_train, _ = roc_curve(y_train, train_probs3)  # pos_label=1
-    test_probs3 = model3.predict_proba(x_test)
+    fpr3_train, tpr3_train, _ = roc_curve(
+        y_train3, train_probs3)  # pos_label=1
+    test_probs3 = model3.predict_proba(x_test3)
     test_probs3 = test_probs3[:, 1]
     fpr3_test, tpr3_test, _ = roc_curve(
-        y_test, test_probs3)  # pos_label=1
+        y_test3, test_probs3)  # pos_label=1
     plt.plot(fpr3_train, tpr3_train, marker='.', label='train')
     plt.plot(fpr3_test, tpr3_test, marker='.', label='validation')
     plt.title('SVM')
@@ -236,13 +316,14 @@ def plot_roc_curve(model1, model2, model3, model4, x_train,x_test,y_train,y_test
 
     # ROC CURVE LOGISTIC REGRESSION
     plt.subplot(2, 2, 4)
-    train_probs4 = model4.predict_proba(x_train)
+    train_probs4 = model4.predict_proba(x_train4)
     train_probs4 = train_probs4[:, 1]
-    fpr4_train, tpr4_train, _ = roc_curve(y_train, train_probs4)  # pos_label=1
-    test_probs4 = model4.predict_proba(x_test)
+    fpr4_train, tpr4_train, _ = roc_curve(
+        y_train4, train_probs4)  # pos_label=1
+    test_probs4 = model4.predict_proba(x_test4)
     test_probs4 = test_probs4[:, 1]
     fpr4_test, tpr4_test, _ = roc_curve(
-        y_test, test_probs4)  # pos_label=1
+        y_test4, test_probs4)  # pos_label=1
     plt.plot(fpr4_train, tpr4_train, marker='.', label='train')
     plt.plot(fpr4_test, tpr4_test, marker='.', label='validation')
     plt.title('Logistic Regression')
@@ -250,3 +331,26 @@ def plot_roc_curve(model1, model2, model3, model4, x_train,x_test,y_train,y_test
     plt.ylabel('True Positive Rate')
     plt.legend()
     plt.savefig('images/lukas/simple/ROC Curve.pdf')
+
+
+def savefig_regularization(lambda_interval, train_error_rate, test_error_rate, opt_lambda, index, min_error, coefficient_norm):
+    plt.figure(figsize=(8, 8))
+    plt.semilogx(lambda_interval, train_error_rate*100)
+    plt.semilogx(lambda_interval, test_error_rate*100)
+    plt.semilogx(opt_lambda, min_error*100, 'o')
+    plt.text(1e-8, 3, "Minimum test error: " + str(np.round(min_error*100, 2)
+                                                   ) + ' % at 10^' + str(np.round(np.log10(opt_lambda), 2)))
+    plt.xlabel('Regularization strength, $\log_{10}(\lambda)$')
+    plt.ylabel('Error rate (%)')
+    plt.title('Classification error')
+    plt.legend(['Training error', 'Test error',
+               'Test minimum'], loc='upper right')
+    plt.grid()
+    plt.savefig("images/lukas/regression/RegularizationErrorRate_"+str(index)+".pdf")
+    plt.figure(figsize=(8, 8))
+    plt.semilogx(lambda_interval, coefficient_norm, 'k')
+    plt.ylabel('L2 Norm')
+    plt.xlabel('Regularization strength, $\log_{10}(\lambda)$')
+    plt.title('Parameter vector L2 norm')
+    plt.grid()
+    plt.savefig("images/lukas/regression/RegularizationL2_"+str(index)+".pdf")
